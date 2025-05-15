@@ -32,8 +32,9 @@ const readlineSync = require('readline-sync');
 // Initial Code with Bugs (modified to use readline-sync)
 let animals = [];
 let fees = [];
+
 function addAnimal(name, fee) {
-    if (!name || fee < 0) {
+    if (!name || fee < 0 || isNaN(fee)) { // added isNAN so it also doesn't take in characters for a fee.
         throw new Error("Invalid animal name or adoption fee!");
     }
     animals.push(name);
@@ -48,22 +49,38 @@ function getAdoptionFee(animalName) {
 }
 // Main program
 console.log("Welcome to the Pet Shelter System");
+
 while (true) {
+    try {
     let action = readlineSync.question("Choose an action: 'add', 'fee', or 'exit': ").toLowerCase();
+    
     if (action === "exit") {
         console.log("Goodbye!");
         break;
     }
     if (action === "add") {
-        let animal = readlineSync.question("Enter the animal's name: ");
-        let fee = Number(readlineSync.question("Enter the adoption fee: "));
+        let animal = readlineSync.question("Enter the animal's name: "); //could use trim here
+        let fee = Number(readlineSync.question("Enter the adoption fee: ")); //could also use trim here and a way to always get a positive number
+        
+        try {
         addAnimal(animal, fee);
         console.log(`${animal} added with a fee of $${fee}.`);
+        }catch (err) {
+            console.log(`Runtime Error: ${err.message}`)
+        }
     } else if (action === "fee") {
         let animal = readlineSync.question("Enter the animal's name to find its adoption fee: ");
+        
+        try {
         console.log(`${animal}'s adoption fee is $${getAdoptionFee(animal)}.`);
+        } catch (err) {
+            console.log(`Runtime Error: ${err.message}`);
+        }
     } else {
         console.log("Invalid action. Please choose 'add', 'fee', or 'exit'.");
+    }
+} catch (err) {
+    console.log(`Runtime Error: ${err.message}`);
     }
 }
 
@@ -74,11 +91,24 @@ Problems to Solve
 
 Invalid Input Errors:
   What happens if the user provides a negative adoption fee or leaves the name blank?
+
+  1. Negative Number throws a run time exception and stops the program from executing further
+  2. Blank Name throws a run time exception error and stops the program from continuing. 
+
   What happens if the user tries to find the fee for an animal that hasn’t been added?
+
+  1.Another error is caused and the program crashes with an uncaught exception 
 
 Code Flow Problems:
   What happens if the program throws an exception? Does the rest of the code continue running?
 
+  1. Negative, the program that is currently running stops and the remaining code does not continue. 
+
 Structured Exception Handling:
   Add try/catch blocks to handle the above errors gracefully.
+
+1. try/catch Keeps the program running even when it hits an excepetion.
+
 */
+
+    
